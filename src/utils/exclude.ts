@@ -1,5 +1,5 @@
 /**
- * Exclude keys from object
+ * @description Exclude keys from object
  * @param obj
  * @param keys
  * @returns object without excluded keys
