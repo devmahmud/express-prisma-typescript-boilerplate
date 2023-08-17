@@ -236,6 +236,11 @@
   resolved "https://registry.yarnpkg.com/@types/triple-beam/-/triple-beam-1.3.2.tgz#38ecb64f01aa0d02b7c8f4222d7c38af6316fef8"
   integrity sha512-txGIh+0eDFzKGC25zORnswy+br1Ha7hj5cMVwKIU7+s0U2AxxJru/jZSMU6OC9MJWP6+pc/hc6ZjyZShpsyY2g==
 
+"@types/xss-filters@^0.0.27":
+  version "0.0.27"
+  resolved "https://registry.yarnpkg.com/@types/xss-filters/-/xss-filters-0.0.27.tgz#82c1e6300654dd771efe01f2f0cc977e8d996655"
+  integrity sha512-ctN3f7vl4tBXa+W11hm0oDwp67K6SYK07h4OmNgaEoIOVJ/rksnc2prpbjK+Ju3/fYIa3HQaH4x9Y525CXFOow==
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -1281,6 +1286,11 @@ winston@^3.10.0:
     stack-trace "0.0.x"
     triple-beam "^1.3.0"
     winston-transport "^4.5.0"
+
+xss-filters@^1.2.7:
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/xss-filters/-/xss-filters-1.2.7.tgz#59fa1de201f36f2f3470dcac5f58ccc2830b0a9a"
+  integrity sha512-KzcmYT/f+YzcYrYRqw6mXxd25BEZCxBQnf+uXTopQDIhrmiaLwO+f+yLsIvvNlPhYvgff8g3igqrBxYh9k8NbQ==
 
 yallist@^4.0.0:
   version "4.0.0"
