@@ -1,5 +1,5 @@
 /**
- * @description picks keys from object
+ * picks keys from object
  * @param obj
  * @param keys
  * @returns object with only picked keys
