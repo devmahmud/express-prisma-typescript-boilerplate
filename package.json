@@ -43,6 +43,7 @@
     "http-status": "^1.6.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
+    "winston": "^3.10.0",
     "zod": "^3.22.1"
   }
 }
