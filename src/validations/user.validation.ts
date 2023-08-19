@@ -1,6 +1,6 @@
 import { Role } from '@prisma/client';
 import z from 'zod';
-import { password } from './custom.validation';
+// import { password } from './custom.validation';
 
 const createUser = z.object({
   body: z.object({
@@ -11,15 +11,15 @@ const createUser = z.object({
   }),
 });
 
-// const getUsers = {
-//   query: Joi.object().keys({
-//     name: Joi.string(),
-//     role: Joi.string(),
-//     sortBy: Joi.string(),
-//     limit: Joi.number().integer(),
-//     page: Joi.number().integer(),
-//   }),
-// };
+const getUsers = z.object({
+  query: z.object({
+    name: z.string().min(1).optional(),
+    role: z.enum([Role.USER, Role.ADMIN]).optional(),
+    sortBy: z.enum(['createdAt', 'name']).optional(),
+    limit: z.coerce.number().int().min(1).max(100).optional(),
+    page: z.coerce.number().int().min(1).optional(),
+  }),
+});
 
 // const getUser = {
 //   params: Joi.object().keys({
@@ -48,7 +48,7 @@ const createUser = z.object({
 
 export default {
   createUser,
-  // getUsers,
+  getUsers,
   // getUser,
   // updateUser,
   // deleteUser,
