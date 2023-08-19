@@ -1,6 +1,5 @@
 import { Role } from '@prisma/client';
 import z from 'zod';
-// import { password } from './custom.validation';
 
 const createUser = z.object({
   body: z.object({
@@ -21,35 +20,33 @@ const getUsers = z.object({
   }),
 });
 
-// const getUser = {
-//   params: Joi.object().keys({
-//     userId: Joi.number().integer(),
-//   }),
-// };
+const getUser = z.object({
+  params: z.object({
+    userId: z.coerce.number().int(),
+  }),
+});
 
-// const updateUser = {
-//   params: Joi.object().keys({
-//     userId: Joi.number().integer(),
-//   }),
-//   body: Joi.object()
-//     .keys({
-//       email: Joi.string().email(),
-//       password: Joi.string().custom(password),
-//       name: Joi.string(),
-//     })
-//     .min(1),
-// };
+const updateUser = z.object({
+  params: z.object({
+    userId: z.coerce.number().int(),
+  }),
+  body: z.object({
+    email: z.string().email().optional(),
+    password: z.string().min(8).optional(),
+    name: z.string().min(1).optional(),
+  }),
+});
 
-// const deleteUser = {
-//   params: Joi.object().keys({
-//     userId: Joi.number().integer(),
-//   }),
-// };
+const deleteUser = z.object({
+  params: z.object({
+    userId: z.coerce.number().int(),
+  }),
+});
 
 export default {
   createUser,
   getUsers,
-  // getUser,
-  // updateUser,
-  // deleteUser,
+  getUser,
+  updateUser,
+  deleteUser,
 };
