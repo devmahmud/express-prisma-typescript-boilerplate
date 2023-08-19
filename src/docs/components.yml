@@ -46,6 +46,15 @@ components:
           type: number
         message:
           type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+              path:
+                type: string
 
   responses:
     DuplicateEmail:
