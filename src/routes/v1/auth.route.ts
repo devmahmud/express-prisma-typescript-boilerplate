@@ -14,11 +14,11 @@ router.post(
   validate(authValidation.refreshTokens),
   authController.refreshTokens
 );
-// router.post(
-//   '/forgot-password',
-//   validate(authValidation.forgotPassword),
-//   authController.forgotPassword
-// );
+router.post(
+  '/forgot-password',
+  validate(authValidation.forgotPassword),
+  authController.forgotPassword
+);
 // router.post(
 //   '/reset-password',
 //   validate(authValidation.resetPassword),
