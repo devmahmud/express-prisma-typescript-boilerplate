@@ -53,11 +53,11 @@ const resetPassword = z.object({
   }),
 });
 
-// const verifyEmail = {
-//   query: Joi.object().keys({
-//     token: Joi.string().required(),
-//   }),
-// };
+const verifyEmail = z.object({
+  query: z.object({
+    token: z.string(),
+  }),
+});
 
 export default {
   register,
@@ -66,5 +66,5 @@ export default {
   refreshTokens,
   forgotPassword,
   resetPassword,
-  // verifyEmail,
+  verifyEmail,
 };
