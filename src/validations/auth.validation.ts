@@ -20,23 +20,23 @@ const login = z.object({
   }),
 });
 
-// const logout = {
-//   body: Joi.object().keys({
-//     refreshToken: Joi.string().required(),
-//   }),
-// };
+const logout = z.object({
+  body: z.object({
+    refreshToken: z.string(),
+  }),
+});
 
-// const refreshTokens = {
-//   body: Joi.object().keys({
-//     refreshToken: Joi.string().required(),
-//   }),
-// };
+const refreshTokens = z.object({
+  body: z.object({
+    refreshToken: z.string(),
+  }),
+});
 
-// const forgotPassword = {
-//   body: Joi.object().keys({
-//     email: Joi.string().email().required(),
-//   }),
-// };
+const forgotPassword = z.object({
+  body: z.object({
+    email: z.string().email(),
+  }),
+});
 
 // const resetPassword = {
 //   query: Joi.object().keys({
@@ -56,9 +56,9 @@ const login = z.object({
 export default {
   register,
   login,
-  // logout,
-  // refreshTokens,
-  // forgotPassword,
+  logout,
+  refreshTokens,
+  forgotPassword,
   // resetPassword,
   // verifyEmail,
 };
