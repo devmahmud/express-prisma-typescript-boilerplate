@@ -13,12 +13,12 @@ const register = z.object({
   }),
 });
 
-// const login = {
-//   body: Joi.object().keys({
-//     email: Joi.string().required(),
-//     password: Joi.string().required(),
-//   }),
-// };
+const login = z.object({
+  body: z.object({
+    email: z.string().email(),
+    password: z.string(),
+  }),
+});
 
 // const logout = {
 //   body: Joi.object().keys({
@@ -55,7 +55,7 @@ const register = z.object({
 
 export default {
   register,
-  // login,
+  login,
   // logout,
   // refreshTokens,
   // forgotPassword,
