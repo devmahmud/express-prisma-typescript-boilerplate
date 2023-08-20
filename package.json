@@ -7,7 +7,7 @@
   "author": "Mahmudul Alam <expelmahmud@gmail.com>",
   "scripts": {
     "start": "yarn build && pm2 start ecosystem.config.json --no-daemon",
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon -r tsconfig-paths/register -r ts-node src/index.ts",
     "test": "docker-compose -f docker-compose.only-db-test.yml up -d && yarn db:push && jest -i --colors --verbose --detectOpenHandles && docker-compose -f docker-compose.only-db-test.yml down",
     "test:watch": "docker-compose -f docker-compose.only-db-test.yml up -d && yarn db:push && jest -i --watchAll && docker-compose -f docker-compose.only-db-test.yml down",
     "lint": "eslint .",
@@ -20,7 +20,9 @@
     "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
     "docker:test": "docker-compose -f docker-compose.yml -f docker-compose.test.yml up",
     "docker:dev-db:start": "docker-compose -f docker-compose.only-db-dev.yml up -d",
-    "docker:dev-db:stop": "docker-compose -f docker-compose.only-db-dev.yml down"
+    "docker:dev-db:stop": "docker-compose -f docker-compose.only-db-dev.yml down",
+    "prepare": "husky install",
+    "build": "rimraf build && tsc -p tsconfig.json && tscpaths -p tsconfig.json -s . -o ./build"
   },
   "keywords": [
     "node",
@@ -59,13 +61,17 @@
     "eslint": "^8.47.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.2",
     "prisma": "^5.1.1",
+    "rimraf": "^5.0.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
+    "tscpaths": "^0.0.9",
     "typescript": "^5.1.6"
   },
   "dependencies": {
