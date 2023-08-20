@@ -66,7 +66,6 @@ cp .env.example .env
 - **Compression**: gzip compression with [compression](https://github.com/expressjs/compression)
 - **Docker support**
 - **Code coverage**: using [coveralls](https://coveralls.io)
-- **Code quality**: with [Codacy](https://www.codacy.com)
 - **Git hooks**: with [Husky](https://github.com/typicode/husky) and [lint-staged](https://github.com/okonet/lint-staged)
 - **Linting**: with [ESLint](https://eslint.org) and [Prettier](https://prettier.io)
 - **Editor config**: consistent editor configuration using [EditorConfig](https://editorconfig.org)
@@ -116,6 +115,9 @@ yarn docker:dev
 
 # run docker container in production mode
 yarn docker:prod
+
+# run all tests in a docker container
+yarn docker:test
 
 # run docker container with PostgreSQL db
 yarn docker:dev-db:start
