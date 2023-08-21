@@ -1,15 +1,10 @@
 import { z } from 'zod';
+import { password } from './custom.validation';
 
 const register = z.object({
   body: z.object({
     email: z.string().email(),
-    password: z
-      .string()
-      .min(8, 'password must be at least 8 characters')
-      .refine(
-        (value) => value.match(/\d/) && value.match(/[a-zA-Z]/),
-        'Password must contain at least 1 letter and 1 number'
-      ),
+    password: password,
   }),
 });
 
@@ -43,13 +38,7 @@ const resetPassword = z.object({
     token: z.string(),
   }),
   body: z.object({
-    password: z
-      .string()
-      .min(8, 'password must be at least 8 characters')
-      .refine(
-        (value) => value.match(/\d/) && value.match(/[a-zA-Z]/),
-        'Password must contain at least 1 letter and 1 number'
-      ),
+    password: password,
   }),
 });
 

@@ -76,7 +76,12 @@ paths:
           name: sortBy
           schema:
             type: string
-          description: sort by query in the form of field:desc/asc (ex. name:asc)
+          description: sort by query (ex. name, createdAt)
+        - in: query
+          name: sortOrder
+          schema:
+            type: string
+          description: sort order (ex. asc, desc)
         - in: query
           name: limit
           schema:

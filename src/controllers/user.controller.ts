@@ -3,16 +3,18 @@ import pick from '@/utils/pick';
 import ApiError from '@/utils/ApiError';
 import catchAsync from '@/utils/catchAsync';
 import { userService } from '@/services';
+import exclude from '@/utils/exclude';
 
 const createUser = catchAsync(async (req, res) => {
   const { email, password, name, role } = req.body;
   const user = await userService.createUser(email, password, name, role);
-  res.status(httpStatus.CREATED).send(user);
+  const userWithoutPassword = exclude(user, ['password']);
+  res.status(httpStatus.CREATED).send(userWithoutPassword);
 });
 
 const getUsers = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name', 'role']);
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
   const result = await userService.queryUsers(filter, options);
   res.send(result);
 });

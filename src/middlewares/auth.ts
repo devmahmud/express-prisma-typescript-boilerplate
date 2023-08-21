@@ -18,8 +18,6 @@ const verifyCallback =
     }
     req.user = user;
 
-    console.log(user);
-
     if (requiredRights.length) {
       const userRights = roleRights.get(user.role) ?? [];
       const hasRequiredRights = requiredRights.every((requiredRight) =>

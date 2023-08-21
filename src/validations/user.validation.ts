@@ -1,10 +1,11 @@
 import { Role } from '@prisma/client';
 import z from 'zod';
+import { password } from './custom.validation';
 
 const createUser = z.object({
   body: z.object({
     email: z.string().email(),
-    password: z.string(),
+    password: password,
     name: z.string().min(1),
     role: z.enum([Role.USER, Role.ADMIN]),
   }),
@@ -15,6 +16,7 @@ const getUsers = z.object({
     name: z.string().min(1).optional(),
     role: z.enum([Role.USER, Role.ADMIN]).optional(),
     sortBy: z.enum(['createdAt', 'name']).optional(),
+    sortOrder: z.enum(['asc', 'desc']).optional(),
     limit: z.coerce.number().int().min(1).max(100).optional(),
     page: z.coerce.number().int().min(1).optional(),
   }),
@@ -32,7 +34,7 @@ const updateUser = z.object({
   }),
   body: z.object({
     email: z.string().email().optional(),
-    password: z.string().min(8).optional(),
+    password: password.optional(),
     name: z.string().min(1).optional(),
   }),
 });
