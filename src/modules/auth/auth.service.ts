@@ -22,7 +22,7 @@ export const loginUserWithEmailAndPassword = async (
     'isEmailVerified',
   ]);
 
-  if (!user || !(await isPasswordMatch(password, user.password as string))) {
+  if (!user || !user.password || !(await isPasswordMatch(password, user.password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
   return exclude(user, ['password']);

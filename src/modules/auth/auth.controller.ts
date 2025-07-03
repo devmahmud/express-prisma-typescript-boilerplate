@@ -15,10 +15,17 @@ export const register = catchAsync(async (req) => {
   const { email, password, name } = body;
   const user = await userService.createUser(email, password, name);
   const tokens = await tokenService.generateAuthTokens(user);
+
+  // Include name field for register response
+  const userWithName = {
+    ...user,
+    name,
+  };
+
   return {
     statusCode: httpStatus.CREATED,
     message: 'User created successfully',
-    data: { user, tokens },
+    data: { user: userWithName, tokens },
   };
 });
 
@@ -65,7 +72,7 @@ export const forgotPassword = catchAsync(async (req) => {
   const resetPasswordToken = await tokenService.generateResetPasswordToken(email);
   await emailService.sendResetPasswordEmail(email, resetPasswordToken);
   return {
-    statusCode: httpStatus.NO_CONTENT,
+    statusCode: httpStatus.OK,
     message: 'Reset password email sent successfully',
   };
 });
@@ -77,7 +84,7 @@ export const resetPassword = catchAsync(async (req) => {
   } = await zParse(authSchema.resetPasswordSchema, req);
   await authService.resetPassword(token as string, password);
   return {
-    statusCode: httpStatus.NO_CONTENT,
+    statusCode: httpStatus.OK,
     message: 'Password reset successfully',
   };
 });
@@ -90,7 +97,7 @@ export const sendVerificationEmail = catchAsync(async (req) => {
     await emailService.sendVerificationEmail(user.email, verifyEmailToken);
   }
   return {
-    statusCode: httpStatus.NO_CONTENT,
+    statusCode: httpStatus.OK,
     message: 'Verification email sent successfully',
   };
 });
@@ -103,7 +110,7 @@ export const verifyEmail = catchAsync(async (req) => {
 
   await authService.verifyEmail(token, user.id);
   return {
-    statusCode: httpStatus.NO_CONTENT,
+    statusCode: httpStatus.OK,
     message: 'Email verified successfully',
   };
 });

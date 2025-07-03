@@ -13,7 +13,7 @@ export const createUser = async (
   if (await getUserByEmail(email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  return prisma.user.create({
+  const result = await prisma.user.create({
     data: {
       email,
       name,
@@ -26,6 +26,8 @@ export const createUser = async (
       isEmailVerified: true,
     },
   });
+
+  return result;
 };
 
 export const queryUsers = async <Key extends keyof User>(
@@ -111,7 +113,7 @@ export const getUserByEmail = async <Key extends keyof User>(
 export const updateUserById = async <Key extends keyof User>(
   userId: string,
   updateBody: Prisma.UserUpdateInput,
-  keys: Key[] = ['id', 'email', 'name'] as Key[]
+  keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
 ): Promise<Pick<User, Key> | null> => {
   const user = await getUserById(userId, ['id', 'email', 'name']);
   if (!user) {

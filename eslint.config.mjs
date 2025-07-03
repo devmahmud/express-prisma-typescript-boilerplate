@@ -19,6 +19,7 @@ export default [
         module: 'readonly',
         __dirname: 'readonly',
         __filename: 'readonly',
+        console: 'readonly',
       },
     },
     plugins: {
@@ -43,6 +44,7 @@ export default [
         module: 'readonly',
         __dirname: 'readonly',
         __filename: 'readonly',
+        console: 'readonly',
       },
     },
   },
