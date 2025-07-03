@@ -14,6 +14,8 @@ import { errorConverter, errorHandler } from '@/shared/middlewares/error';
 import { authLimiter } from '@/shared/middlewares/rate-limiter';
 import xss from '@/shared/middlewares/xss';
 import ApiError from '@/shared/utils/api-error';
+import { openApiDocument } from './openapi';
+import swaggerUi from 'swagger-ui-express';
 
 const app = express();
 
@@ -86,7 +88,7 @@ if (config.env === 'production') {
   // Limit repeated failed requests to auth endpoints
   app.use('/v1/auth', authLimiter);
 
-  // Swagger docs
+  // Swagger docs with basic auth in production
   app.use(
     '/v1/docs',
     basicAuth({
@@ -99,6 +101,9 @@ if (config.env === 'production') {
 
 // v1 api routes
 app.use('/v1', routes);
+
+// Swagger docs (after routes to avoid conflicts)
+app.use('/v1/docs', swaggerUi.serve as any, swaggerUi.setup(openApiDocument) as any);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
