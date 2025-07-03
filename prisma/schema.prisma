@@ -11,31 +11,84 @@ datasource db {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  email           String   @unique
+  id              String         @id @default(uuid())
+  email           String         @unique
   name            String?
-  password        String
-  role            Role     @default(USER)
-  isEmailVerified Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  Token           Token[]
+  password        String?
+  role            Role[]         @default([USER])
+  isEmailVerified Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  tokens          Token[]
+  notifications   Notification[]
+  posts           Post[]
+  comments        Comment[]
 }
 
 model Token {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   token       String
   type        TokenType
   expires     DateTime
   blacklisted Boolean
   createdAt   DateTime  @default(now())
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      Int
+  userId      String
+
+  @@index([userId])
+  @@index([token])
+  @@index([type])
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  title      String
+  message    String
+  entityType String?
+  entityId   String?
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model Post {
+  id        String    @id @default(uuid())
+  title     String
+  content   String
+  published Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  comments  Comment[]
+
+  @@index([authorId])
+  @@index([published])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+
+  @@index([authorId])
+  @@index([postId])
 }
 
 enum Role {
   USER
   ADMIN
+  MODERATOR
 }
 
 enum TokenType {

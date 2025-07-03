@@ -1,38 +1,58 @@
 version: '3.8'
 
 services:
-  node-app:
-    build: .
-    image: node-app
-    environment:
-      - DATABASE_URL=postgres://postgres:secret@postgresdb:5432/postgres
+  app:
+    container_name: express-app
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE:-Dockerfile} # Use the production Dockerfile by default.
     ports:
-      - '3000:3000'
-    depends_on:
-      - postgresdb
+      - '8080:8080'
+    env_file:
+      - .env
     volumes:
-      - .:/usr/src/node-app
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+    depends_on:
+      - postgres
+      - redis
     networks:
-      - node-network
+      - app-network
 
-  postgresdb:
-    image: postgres
-    container_name: postgresdb
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
     restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=express_boilerplate
     ports:
       - '5432:5432'
     volumes:
-      - dbdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     networks:
-      - node-network
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
 
 volumes:
-  dbdata:
+  postgres_data:
+    driver: local
+  redis_data:
     driver: local
 
 networks:
-  node-network:
+  app-network:
     driver: bridge

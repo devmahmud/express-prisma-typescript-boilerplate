@@ -7,9 +7,14 @@ dotenv.config({ path: path.join(process.cwd(), '.env') });
 // Define env vars schema
 const envVarsSchema = z.object({
   NODE_ENV: z
-    .enum(['production', 'development', 'test'])
-    .refine((value) => value !== undefined, { message: 'NODE_ENV is required' }),
+    .enum(['production', 'development', 'staging', 'test'])
+    .refine((value) => value !== undefined, { message: 'NODE_ENV is required' })
+    .default('development'),
+  APP_INSTANCES: z.coerce.number().default(1),
   PORT: z.coerce.number().default(8000),
+  SENTRY_DSN: z.string().optional().describe('sentry dsn'),
+  REDIS_URL: z.string().optional().describe('redis url'),
+  DATABASE_URL: z.string().describe('database connection string'),
   JWT_SECRET: z.string().default('secret').describe('JWT secret key'),
   JWT_ACCESS_EXPIRATION_MINUTES: z.coerce
     .number()
@@ -27,11 +32,14 @@ const envVarsSchema = z.object({
     .number()
     .default(10)
     .describe('minutes after which verify email token expires'),
-  SMTP_HOST: z.string().describe('server that will send the emails'),
-  SMTP_PORT: z.coerce.number().describe('port to connect to the email server'),
-  SMTP_USERNAME: z.string().describe('username for email server'),
-  SMTP_PASSWORD: z.string().describe('password for email server'),
-  EMAIL_FROM: z.string().describe('the from field in the emails sent by the app'),
+  SMTP_HOST: z.string().optional().describe('server that will send the emails'),
+  SMTP_PORT: z.coerce.number().optional().describe('port to connect to the email server'),
+  SMTP_USERNAME: z.string().optional().describe('username for email server'),
+  SMTP_PASSWORD: z.string().optional().describe('password for email server'),
+  EMAIL_FROM: z.string().optional().describe('the from field in the emails sent by the app'),
+  SWAGGER_USERNAME: z.string().default('admin').describe('swagger username'),
+  SWAGGER_PASSWORD: z.string().default('admin').describe('swagger password'),
+  LOGTAIL_SOURCE_TOKEN: z.string().optional().describe('logtail source token for production'),
 });
 
 // Validate env vars
@@ -43,7 +51,11 @@ if (!envVars.success) {
 
 export default {
   env: envVars.data.NODE_ENV,
+  appInstances: envVars.data.APP_INSTANCES,
+  sentryDsn: envVars.data.SENTRY_DSN,
   port: envVars.data.PORT,
+  redisUrl: envVars.data.REDIS_URL,
+  databaseUrl: envVars.data.DATABASE_URL,
   jwt: {
     secret: envVars.data.JWT_SECRET,
     accessExpirationMinutes: envVars.data.JWT_ACCESS_EXPIRATION_MINUTES,
@@ -62,4 +74,9 @@ export default {
     },
     from: envVars.data.EMAIL_FROM,
   },
+  swagger: {
+    username: envVars.data.SWAGGER_USERNAME,
+    password: envVars.data.SWAGGER_PASSWORD,
+  },
+  logtailSourceToken: envVars.data.LOGTAIL_SOURCE_TOKEN,
 };

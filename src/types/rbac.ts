@@ -1,0 +1,18 @@
+export type Permission =
+  | 'viewProfile'
+  | 'updateProfile'
+  | 'viewPosts'
+  | 'createPost'
+  | 'updateOwnPost'
+  | 'deleteOwnPost'
+  | 'createComment'
+  | 'updateOwnComment'
+  | 'deleteOwnComment'
+  | 'viewNotifications'
+  | 'moderatePosts'
+  | 'moderateComments'
+  | 'viewAllUsers'
+  | 'manageUsers'
+  | 'manageRoles'
+  | 'viewSystemAnalytics'
+  | 'viewAuditLogs';

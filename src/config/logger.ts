@@ -1,3 +1,5 @@
+import { Logtail } from '@logtail/node';
+import { LogtailTransport } from '@logtail/winston';
 import winston from 'winston';
 import config from './config';
 
@@ -8,6 +10,9 @@ const enumerateErrorFormat = winston.format((info) => {
   }
   return info;
 });
+
+// Initialize Logtail client
+const logtail = config.logtailSourceToken ? new Logtail(config.logtailSourceToken) : null;
 
 // Init logger
 const logger = winston.createLogger({
@@ -22,6 +27,8 @@ const logger = winston.createLogger({
     new winston.transports.Console({
       stderrLevels: ['error'],
     }),
+    // Add Logtail transport in production
+    ...(config.env === 'production' && logtail ? [new LogtailTransport(logtail)] : []),
   ],
 });
 

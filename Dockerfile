@@ -1,15 +1,27 @@
-FROM node:alpine
+FROM node:20-slim
 
-RUN mkdir -p /usr/src/node-app && chown -R node:node /usr/src/node-app
+RUN apt-get update && apt-get install -y openssl
 
-WORKDIR /usr/src/node-app
+WORKDIR /app
 
+# Install dependencies
 COPY package.json yarn.lock ./
+COPY prisma ./prisma/
+RUN yarn install --frozen-lockfile
 
-USER node
+# Install pm2 globally
+RUN yarn global add pm2
 
-RUN yarn install --pure-lockfile
+# Copy the rest of the code
+COPY . .
 
-COPY --chown=node:node . .
+# Generate Prisma client and build the app
+RUN yarn prisma generate
+RUN yarn build
 
-EXPOSE 8000
+# Add and configure entrypoint
+COPY entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+# Use the entrypoint script as CMD
+CMD ["sh", "./entrypoint.sh"]

@@ -1,0 +1,17 @@
+FROM node:20-slim
+
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+COPY prisma ./prisma/
+
+RUN yarn install
+RUN yarn prisma generate
+
+COPY . .
+
+RUN yarn global add ts-node nodemon
+
+EXPOSE 8000
+
+CMD ["yarn", "dev"] 

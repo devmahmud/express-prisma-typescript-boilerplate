@@ -1,17 +1,19 @@
-import express from 'express';
-import helmet from 'helmet';
 import compression from 'compression';
 import cors from 'cors';
-import passport from 'passport';
+import express from 'express';
+import basicAuth from 'express-basic-auth';
+import helmet from 'helmet';
 import httpStatus from 'http-status';
+import passport from 'passport';
+
 import config from '@/config/config';
 import morgan from '@/config/morgan';
-import xss from '@/middlewares/xss';
 import { jwtStrategy } from '@/config/passport';
-import { authLimiter } from '@/middlewares/rateLimiter';
-import routes from '@/routes/v1';
-import { errorConverter, errorHandler } from '@/middlewares/error';
-import ApiError from '@/utils/ApiError';
+import routes from '@/routes';
+import { errorConverter, errorHandler } from '@/shared/middlewares/error';
+import { authLimiter } from '@/shared/middlewares/rate-limiter';
+import xss from '@/shared/middlewares/xss';
+import ApiError from '@/shared/utils/api-error';
 
 const app = express();
 
@@ -23,6 +25,9 @@ if (config.env !== 'test') {
 // set security HTTP headers
 app.use(helmet());
 
+// Trust proxy for rate limiting
+app.set('trust proxy', 1);
+
 // parse json request body
 app.use(express.json());
 
@@ -33,19 +38,63 @@ app.use(express.urlencoded({ extended: true }));
 app.use(xss());
 
 // gzip compression
-app.use(compression());
+app.use(compression() as any);
 
 // enable cors
-app.use(cors());
-app.options('*', cors());
+const corsOptions = {
+  origin: (
+    requestOrigin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
+    const allowedOrigins = ['http://localhost:3000', 'http://localhost:8000'];
+
+    if (!requestOrigin || allowedOrigins.includes(requestOrigin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'Origin',
+    'Accept',
+    'X-Requested-With',
+    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Headers',
+    'Access-Control-Allow-Methods',
+    'Access-Control-Allow-Credentials',
+  ],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+};
+
+// Apply CORS middleware before other routes
+app.use(cors(corsOptions));
+
+// Handle preflight requests for all routes
+app.options('*', cors(corsOptions));
 
 // jwt authentication
-app.use(passport.initialize());
+app.use(passport.initialize() as any);
 passport.use('jwt', jwtStrategy);
 
-// limit repeated failed requests to auth endpoints
 if (config.env === 'production') {
+  // Limit repeated failed requests to auth endpoints
   app.use('/v1/auth', authLimiter);
+
+  // Swagger docs
+  app.use(
+    '/v1/docs',
+    basicAuth({
+      users: { [config.swagger.username]: config.swagger.password },
+      challenge: true,
+      unauthorizedResponse: () => 'Unauthorized',
+    })
+  );
 }
 
 // v1 api routes
