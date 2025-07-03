@@ -4,7 +4,13 @@ import httpStatus from 'http-status';
 
 const prisma = new PrismaClient();
 
-const createPost = async (postBody: Prisma.PostCreateInput, userId: string) => {
+type CreatePostData = {
+  title: string;
+  content: string;
+  published?: boolean;
+};
+
+const createPost = async (postBody: CreatePostData, userId: string) => {
   return prisma.post.create({
     data: {
       ...postBody,

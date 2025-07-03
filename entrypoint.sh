@@ -2,7 +2,7 @@
 set -e  # Exit immediately if a command fails
 
 echo "Running Prisma Migrations..."
-yarn prisma migrate deploy
+pnpm prisma migrate deploy
 
 echo "Ensuring logs directory exists..."
 mkdir -p ./logs

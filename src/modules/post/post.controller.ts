@@ -12,7 +12,7 @@ const createPost = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate');
   }
   const { body } = await zParse(postSchema.createPostSchema, req);
-  const post = await PostService.createPost(body as any, (req.user as ExtendedUser).id);
+  const post = await PostService.createPost(body, (req.user as ExtendedUser).id);
   res.status(httpStatus.CREATED).send(post);
 });
 

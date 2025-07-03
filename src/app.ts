@@ -1,6 +1,6 @@
 import compression from 'compression';
 import cors from 'cors';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import basicAuth from 'express-basic-auth';
 import helmet from 'helmet';
 import httpStatus from 'http-status';
@@ -40,10 +40,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(xss());
 
 // gzip compression
-app.use(compression() as any);
+app.use(compression());
 
 // enable cors
-const corsOptions = {
+const corsOptions: cors.CorsOptions = {
   origin: (
     requestOrigin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
@@ -77,11 +77,8 @@ const corsOptions = {
 // Apply CORS middleware before other routes
 app.use(cors(corsOptions));
 
-// Handle preflight requests for all routes
-app.options('*', cors(corsOptions));
-
 // jwt authentication
-app.use(passport.initialize() as any);
+app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
 
 if (config.env === 'production') {
@@ -103,10 +100,10 @@ if (config.env === 'production') {
 app.use('/v1', routes);
 
 // Swagger docs (after routes to avoid conflicts)
-app.use('/v1/docs', swaggerUi.serve as any, swaggerUi.setup(openApiDocument) as any);
+app.use('/v1/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
 // send back a 404 error for any unknown api request
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
 

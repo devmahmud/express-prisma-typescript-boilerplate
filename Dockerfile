@@ -4,20 +4,23 @@ RUN apt-get update && apt-get install -y openssl
 
 WORKDIR /app
 
+# Install pnpm globally
+RUN npm install -g pnpm
+
 # Install dependencies
-COPY package.json yarn.lock ./
+COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma/
-RUN yarn install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 # Install pm2 globally
-RUN yarn global add pm2
+RUN pnpm add -g pm2
 
 # Copy the rest of the code
 COPY . .
 
 # Generate Prisma client and build the app
-RUN yarn prisma generate
-RUN yarn build
+RUN pnpm prisma generate
+RUN pnpm build
 
 # Add and configure entrypoint
 COPY entrypoint.sh ./entrypoint.sh

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "REST API Boilerplate with Node JS, Express, TypeScript and Prisma",
   "main": "src/index.ts",
+  "type": "commonjs",
   "repository": "git@github.com:devmahmud/express-prisma-typescript-boilerplate.git",
   "author": "Mahmudul Alam <expelmahmud@gmail.com>",
   "scripts": {
