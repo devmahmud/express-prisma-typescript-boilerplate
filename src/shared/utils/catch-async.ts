@@ -7,7 +7,7 @@ import { formatResponse } from './response-formatter';
 type ControllerFunction = (req: Request, res: Response) => Promise<any>;
 
 const catchAsync = (handler: ControllerFunction) => {
-  return async (req: Request, res: Response) => {
+  return async (req: Request, res: Response): Promise<void> => {
     try {
       const result = await handler(req, res);
 

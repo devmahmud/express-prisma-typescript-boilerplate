@@ -48,7 +48,7 @@ export const refreshAuth = async (refreshToken: string): Promise<AuthTokensRespo
     const { userId } = refreshTokenData;
     await prisma.token.delete({ where: { id: refreshTokenData.id } });
     return tokenService.generateAuthTokens({ id: userId });
-  } catch (error) {
+  } catch (_error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate');
   }
 };
@@ -69,7 +69,7 @@ export const resetPassword = async (
 
     await userService.updateUserById(user.id, { password: newPassword });
     await prisma.token.deleteMany({ where: { userId: user.id, type: TokenType.RESET_PASSWORD } });
-  } catch (error) {
+  } catch (_error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Password reset failed');
   }
 };
@@ -79,7 +79,7 @@ export const verifyEmail = async (token: string, userId: string): Promise<void> 
     const tokenData = await tokenService.verifyToken(token, TokenType.VERIFY_EMAIL);
     await prisma.token.delete({ where: { id: tokenData.id } });
     await userService.updateUserById(userId, { isEmailVerified: true });
-  } catch (error) {
+  } catch (_error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
   }
 };

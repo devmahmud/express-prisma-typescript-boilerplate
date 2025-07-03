@@ -19,41 +19,47 @@ const verifyCallback =
     resolve();
   };
 
-const auth = () => async (req: Request, res: Response, next: NextFunction) => {
-  return new Promise((resolve, reject) => {
-    passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject))(
-      req,
-      res,
-      next
-    );
-  })
-    .then(() => next())
-    .catch((err) => {
+const auth =
+  () =>
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await new Promise((resolve, reject) => {
+        passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject))(
+          req,
+          res,
+          next
+        );
+      });
+      next();
+    } catch (err) {
       if (err instanceof ApiError) {
-        return res.status(err.statusCode).json({
+        res.status(err.statusCode).json({
           statusCode: err.statusCode,
           message: err.message,
         });
+        return;
       }
       next(err);
-    });
-};
+    }
+  };
 
 const requireRight = (requiredRight: Permission) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return res.status(httpStatus.UNAUTHORIZED).json({
+      res.status(httpStatus.UNAUTHORIZED).json({
         statusCode: httpStatus.UNAUTHORIZED,
         message: 'Please authenticate',
       });
+      return;
     }
 
     const userRoles = (req.user as ExtendedUser).role;
     if (!hasRight(userRoles, requiredRight)) {
-      return res.status(httpStatus.FORBIDDEN).json({
+      res.status(httpStatus.FORBIDDEN).json({
         statusCode: httpStatus.FORBIDDEN,
         message: 'Forbidden',
       });
+      return;
     }
 
     next();

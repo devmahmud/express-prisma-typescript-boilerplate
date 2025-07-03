@@ -10,7 +10,7 @@ A production-ready REST API boilerplate with Node.js, Express, TypeScript, and P
 - **PostgreSQL** - Robust, open-source database
 - **JWT Authentication** - Secure token-based authentication
 - **Role-based Access Control** - Flexible permission system
-- **Input Validation** - Request validation with Joi
+- **Input Validation** - Request validation with Zod and zParse
 - **Error Handling** - Centralized error handling
 - **Logging** - Structured logging with Winston
 - **Rate Limiting** - API rate limiting
@@ -30,7 +30,7 @@ A production-ready REST API boilerplate with Node.js, Express, TypeScript, and P
 
 - Node.js 20+
 - PostgreSQL
-- Yarn or npm
+- pnpm or npm
 
 ### Installation
 
@@ -42,7 +42,7 @@ cd express-prisma-typescript-boilerplate
 
 2. Install dependencies:
 ```bash
-yarn install
+pnpm install
 ```
 
 3. Set up environment variables:
@@ -60,12 +60,12 @@ JWT_SECRET=your-jwt-secret
 
 5. Set up the database:
 ```bash
-yarn db:migrate
+pnpm db:migrate
 ```
 
 6. Start the development server:
 ```bash
-yarn dev
+pnpm dev
 ```
 
 The API will be available at `http://localhost:8000`
@@ -96,6 +96,33 @@ src/
 └── index.ts               # Application entry point
 ```
 
+## Input Validation
+
+This boilerplate uses [Zod](https://zod.dev/) for schema-based validation and a utility called `zParse` for parsing and validating Express requests. Validation schemas are defined using Zod in each module, and controllers use `zParse` to validate and extract typed data from the request. This approach provides type safety, clear error messages, and a consistent validation experience.
+
+**Example:**
+```typescript
+// post.validation.ts
+import { z } from 'zod';
+
+export const createPostSchema = z.object({
+  body: z.object({
+    title: z.string().min(1, 'Title is required'),
+    content: z.string().min(1, 'Content is required'),
+    published: z.boolean().optional(),
+  }),
+});
+
+// post.controller.ts
+import zParse from '@/shared/utils/z-parse';
+import * as postSchema from './post.validation';
+
+const createPost = catchAsync(async (req, res) => {
+  const { body } = await zParse(postSchema.createPostSchema, req);
+  // ...
+});
+```
+
 ## API Documentation
 
 Once the server is running, you can access the API documentation at:
@@ -104,20 +131,20 @@ Once the server is running, you can access the API documentation at:
 
 ## Available Scripts
 
-- `yarn dev` - Start development server
-- `yarn build` - Build for production
-- `yarn start` - Start production server
-- `yarn test` - Run tests
-- `yarn test:watch` - Run tests in watch mode
-- `yarn coverage` - Generate test coverage
-- `yarn lint` - Run ESLint
-- `yarn lint:fix` - Fix ESLint errors
-- `yarn prettier` - Check code formatting
-- `yarn prettier:fix` - Fix code formatting
-- `yarn db:studio` - Open Prisma Studio
-- `yarn db:migrate` - Run database migrations
-- `yarn docker:dev` - Start with Docker (development)
-- `yarn docker:prod` - Start with Docker (production)
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm test` - Run tests
+- `pnpm test:watch` - Run tests in watch mode
+- `pnpm coverage` - Generate test coverage
+- `pnpm lint` - Run ESLint
+- `pnpm lint:fix` - Fix ESLint errors
+- `pnpm prettier` - Check code formatting
+- `pnpm prettier:fix` - Fix code formatting
+- `pnpm db:studio` - Open Prisma Studio
+- `pnpm db:migrate` - Run database migrations
+- `pnpm docker:dev` - Start with Docker (development)
+- `pnpm docker:prod` - Start with Docker (production)
 
 ## Docker
 
@@ -125,12 +152,12 @@ The boilerplate includes Docker configuration for easy development and deploymen
 
 ### Development
 ```bash
-yarn docker:dev
+pnpm docker:dev
 ```
 
 ### Production
 ```bash
-yarn docker:prod
+pnpm docker:prod
 ```
 
 ### With Database and Redis

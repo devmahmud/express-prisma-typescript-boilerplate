@@ -1,53 +1,46 @@
-import Joi from 'joi';
-import { objectId } from '@/shared/utils/validate';
+import { z } from 'zod';
 
-export const createPost = {
-  body: Joi.object().keys({
-    title: Joi.string().required(),
-    content: Joi.string().required(),
-    published: Joi.boolean(),
+export const createPostSchema = z.object({
+  body: z.object({
+    title: z.string().min(1, 'Title is required'),
+    content: z.string().min(1, 'Content is required'),
+    published: z.boolean().optional(),
   }),
-};
+});
 
-export const getPosts = {
-  query: Joi.object().keys({
-    title: Joi.string(),
-    published: Joi.boolean(),
-    sortBy: Joi.string(),
-    limit: Joi.number().integer(),
-    page: Joi.number().integer(),
+export const getPostsSchema = z.object({
+  query: z.object({
+    title: z.string().optional(),
+    published: z.boolean().optional(),
+    sortBy: z.string().optional(),
+    limit: z.number().int().positive().optional(),
+    page: z.number().int().positive().optional(),
   }),
-};
+});
 
-export const getPost = {
-  params: Joi.object().keys({
-    postId: Joi.string().custom(objectId),
+export const getPostSchema = z.object({
+  params: z.object({
+    postId: z.string().min(1, 'Post ID is required'),
   }),
-};
+});
 
-export const updatePost = {
-  params: Joi.object().keys({
-    postId: Joi.required().custom(objectId),
+export const updatePostSchema = z.object({
+  params: z.object({
+    postId: z.string().min(1, 'Post ID is required'),
   }),
-  body: Joi.object()
-    .keys({
-      title: Joi.string(),
-      content: Joi.string(),
-      published: Joi.boolean(),
+  body: z
+    .object({
+      title: z.string().optional(),
+      content: z.string().optional(),
+      published: z.boolean().optional(),
     })
-    .min(1),
-};
+    .refine((data) => Object.keys(data).length > 0, {
+      message: 'At least one field must be provided for update',
+    }),
+});
 
-export const deletePost = {
-  params: Joi.object().keys({
-    postId: Joi.string().custom(objectId),
+export const deletePostSchema = z.object({
+  params: z.object({
+    postId: z.string().min(1, 'Post ID is required'),
   }),
-};
-
-export const postValidation = {
-  createPost,
-  getPosts,
-  getPost,
-  updatePost,
-  deletePost,
-};
+});
