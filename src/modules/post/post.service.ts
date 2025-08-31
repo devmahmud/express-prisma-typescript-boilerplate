@@ -1,8 +1,7 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import ApiError from '@/shared/utils/api-error';
 import httpStatus from 'http-status';
-
-const prisma = new PrismaClient();
+import { postRepository } from './post.repository';
 
 type CreatePostData = {
   title: string;
@@ -11,91 +10,18 @@ type CreatePostData = {
 };
 
 const createPost = async (postBody: CreatePostData, userId: string) => {
-  return prisma.post.create({
-    data: {
-      ...postBody,
-      author: {
-        connect: { id: userId },
-      },
-    },
-    include: {
-      author: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-    },
+  return postRepository.create({
+    ...postBody,
+    authorId: userId,
   });
 };
 
 const queryPosts = async (filter: any, options: any) => {
-  const { limit, page, sortBy, sortType } = options;
-  const { published, ...restFilter } = filter;
-
-  const where = {
-    ...restFilter,
-    ...(published !== undefined && { published: published === 'true' }),
-  };
-
-  const posts = await prisma.post.findMany({
-    where,
-    include: {
-      author: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-      _count: {
-        select: {
-          comments: true,
-        },
-      },
-    },
-    skip: (page - 1) * limit,
-    take: limit,
-    orderBy: sortBy ? { [sortBy]: sortType || 'desc' } : { createdAt: 'desc' },
-  });
-
-  const total = await prisma.post.count({ where });
-
-  return {
-    results: posts,
-    page,
-    limit,
-    totalPages: Math.ceil(total / limit),
-    totalResults: total,
-  };
+  return postRepository.findMany(filter, options);
 };
 
 const getPostById = async (id: string) => {
-  return prisma.post.findUnique({
-    where: { id },
-    include: {
-      author: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-      comments: {
-        include: {
-          author: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-        },
-        orderBy: { createdAt: 'desc' },
-      },
-    },
-  });
+  return postRepository.findById(id);
 };
 
 const updatePostById = async (
@@ -110,20 +36,8 @@ const updatePostById = async (
   if (post.authorId !== userId) {
     throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden');
   }
-  Object.assign(post, updateBody);
-  return prisma.post.update({
-    where: { id: postId },
-    data: updateBody,
-    include: {
-      author: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-    },
-  });
+
+  return postRepository.update(postId, updateBody);
 };
 
 const deletePostById = async (postId: string, userId: string) => {
@@ -134,7 +48,7 @@ const deletePostById = async (postId: string, userId: string) => {
   if (post.authorId !== userId) {
     throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden');
   }
-  await prisma.post.delete({ where: { id: postId } });
+  await postRepository.delete(postId);
 };
 
 export const PostService = {

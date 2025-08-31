@@ -246,7 +246,7 @@ describe('Auth Service', () => {
         },
       });
 
-      await authService.verifyEmail(verifyToken.token, user.id);
+      await authService.verifyEmail(verifyToken.token);
 
       // Verify email is marked as verified
       const updatedUser = await prisma.user.findUnique({
@@ -263,9 +263,7 @@ describe('Auth Service', () => {
     });
 
     it('should throw error for invalid verify token', async () => {
-      const user = await createTestUser();
-
-      await expect(authService.verifyEmail(faker.string.alphanumeric(32), user.id)).rejects.toThrow(
+      await expect(authService.verifyEmail(faker.string.alphanumeric(32))).rejects.toThrow(
         new ApiError(401, 'Email verification failed')
       );
     });
@@ -283,7 +281,8 @@ describe('Auth Service', () => {
         },
       });
 
-      await expect(authService.verifyEmail(verifyToken.token, user.id)).rejects.toThrow(
+      await authService.verifyEmail(verifyToken.token);
+      await expect(authService.verifyEmail(verifyToken.token)).rejects.toThrow(
         new ApiError(401, 'Email verification failed')
       );
     });
@@ -301,7 +300,7 @@ describe('Auth Service', () => {
         },
       });
 
-      await expect(authService.verifyEmail(accessToken.token, user.id)).rejects.toThrow(
+      await expect(authService.verifyEmail(accessToken.token)).rejects.toThrow(
         new ApiError(401, 'Email verification failed')
       );
     });

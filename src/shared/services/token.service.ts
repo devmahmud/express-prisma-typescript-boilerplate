@@ -3,11 +3,11 @@ import { add, getUnixTime } from 'date-fns';
 import httpStatus from 'http-status';
 import jwt from 'jsonwebtoken';
 
-import prisma from '@/client';
 import config from '@/config/config';
 import * as userService from '@/modules/user/user.service';
 import ApiError from '@/shared/utils/api-error';
 import { AuthTokensResponse } from '@/types/response';
+import { authRepository } from '@/modules/auth/auth.repository';
 
 /**
  * Generate token
@@ -48,16 +48,13 @@ export const saveToken = async (
   type: TokenType,
   blacklisted = false
 ): Promise<Token> => {
-  const createdToken = prisma.token.create({
-    data: {
-      token,
-      userId,
-      expires,
-      type,
-      blacklisted,
-    },
+  return authRepository.createToken({
+    token,
+    userId,
+    expires,
+    type,
+    blacklisted,
   });
-  return createdToken;
 };
 
 /**
@@ -69,10 +66,8 @@ export const saveToken = async (
 export const verifyToken = async (token: string, type: TokenType): Promise<Token> => {
   const payload = jwt.verify(token, config.jwt.secret);
   const userId = String(payload.sub);
-  const tokenData = await prisma.token.findFirst({
-    where: { token, type, userId, blacklisted: false },
-  });
-  if (!tokenData) {
+  const tokenData = await authRepository.findValidToken(token, type);
+  if (!tokenData || tokenData.userId !== userId) {
     throw new Error('Token not found');
   }
   return tokenData;

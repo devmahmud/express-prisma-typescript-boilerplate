@@ -202,8 +202,8 @@ describe('Notification Service', () => {
 
       const result = await readNotification(user.id, notification.id);
 
-      expect(result.isRead).toBe(true);
-      expect(result.id).toBe(notification.id);
+      expect(result?.isRead).toBe(true);
+      expect(result?.id).toBe(notification.id);
     });
 
     it('should only mark notification for the correct user', async () => {

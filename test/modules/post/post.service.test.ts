@@ -104,7 +104,7 @@ describe('Post Service', () => {
       const result = await PostService.queryPosts({}, { limit: 10, page: 1 });
       const postWithComments = result.results.find((p) => p.id === post.id);
 
-      expect(postWithComments?._count.comments).toBe(2);
+      expect(postWithComments?._count?.comments).toBe(2);
     });
   });
 
@@ -162,10 +162,10 @@ describe('Post Service', () => {
 
       const result = await PostService.updatePostById(post.id, updateData, user.id);
 
-      expect(result.title).toBe(updateData.title);
-      expect(result.content).toBe(updateData.content);
-      expect(result.published).toBe(updateData.published);
-      expect(result.author).toHaveProperty('id', user.id);
+      expect(result?.title).toBe(updateData.title);
+      expect(result?.content).toBe(updateData.content);
+      expect(result?.published).toBe(updateData.published);
+      expect(result?.author).toHaveProperty('id', user.id);
     });
 
     it('should throw error for non-existent post', async () => {

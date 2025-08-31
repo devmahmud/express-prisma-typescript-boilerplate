@@ -106,9 +106,8 @@ export const verifyEmail = catchAsync(async (req) => {
   const {
     body: { token },
   } = await zParse(authSchema.verifyEmailSchema, req);
-  const user = req.user as User;
 
-  await authService.verifyEmail(token, user.id);
+  await authService.verifyEmail(token);
   return {
     statusCode: httpStatus.OK,
     message: 'Email verified successfully',
